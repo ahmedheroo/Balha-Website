@@ -112,6 +112,9 @@ export class GalleryComponent implements AfterViewInit {
     { id: 4, url: 'assets/room4.jpeg', alt: 'غرفة عائلية', caption: 'أجنحة عائلية واسعة', subCaption: 'راحة لك ولعائلتك' },
     { id: 5, url: 'assets/room5.jpeg', alt: 'فندق المدينة', caption: 'قريب من المسجد النبوي', subCaption: 'موقع استراتيجي' },
     { id: 6, url: 'assets/room6.jpeg', alt: 'خدمة الغرف', caption: 'خدمة غرف مميزة', subCaption: 'نهتم بأدق التفاصيل' },
+    { id: 7, url: 'assets/room9.jpeg', alt: 'خدمة الغرف' },
+    { id: 8, url: 'assets/room10.jpeg', alt: 'خدمة الغرف' },
+    { id: 9, url: 'assets/room11.jpeg', alt: 'خدمة الغرف'},
   ];
 
   busImages = [
@@ -121,6 +124,10 @@ export class GalleryComponent implements AfterViewInit {
     { id: 4, url: 'assets/busdriver.jpg', alt: 'سائق', caption: 'سائقين محترفين', subCaption: 'أمان وثقة' },
     { id: 5, url: 'assets/bus7.jpeg', alt: 'باص ليلي', caption: 'خدمات ضيافة', subCaption: 'مشروبات ووجبات خفيفة' },
     { id: 6, url: 'assets/bus6.jpeg', alt: 'مجموعة', caption: 'باصات خاصة للمجموعات', subCaption: 'خصوصية تامة' },
+    { id: 7, url: 'assets/bus8.jpeg', alt: 'مجموعة'},
+    { id: 8, url: 'assets/bus9.jpeg', alt: 'مجموعة'},
+    { id: 9, url: 'assets/bus10.jpeg', alt: 'مجموعة'},
+
   ];
 
   setTab(tab: 'hotels' | 'buses') {

@@ -23,6 +23,11 @@
           "configurations": {
             "production": {
               "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
             }
           }
         },
