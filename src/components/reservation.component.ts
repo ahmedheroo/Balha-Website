@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { NavbarComponent } from './navbar.component';
 import { FooterComponent } from './footer.component';
 
@@ -216,7 +217,11 @@ import { FooterComponent } from './footer.component';
                            <label class="block text-sm font-medium text-gray-700 mb-2">رقم الجوال</label>
                            <input type="tel" formControlName="phone" placeholder="05xxxxxxxx" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#52DE4B] focus:border-transparent outline-none transition-all dir-ltr text-right">
                            @if (form.get('userInfo.phone')?.touched && form.get('userInfo.phone')?.invalid) {
-                             <p class="text-red-500 text-xs mt-1">رقم الجوال مطلوب</p>
+                             @if (form.get('userInfo.phone')?.hasError('required')) {
+                               <p class="text-red-500 text-xs mt-1">رقم الجوال مطلوب</p>
+                             } @else if (form.get('userInfo.phone')?.hasError('pattern')) {
+                               <p class="text-red-500 text-xs mt-1">رقم الجوال يجب أن يبدأ بـ 05 ويتكون من 10 أرقام</p>
+                             }
                            }
                          </div>
                        </div>
@@ -329,6 +334,24 @@ import { FooterComponent } from './footer.component';
         </div>
       </div>
     </section>
+
+    <!-- Thank You Modal -->
+    @if (showThankYouModal()) {
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center shadow-2xl">
+          <div class="w-16 h-16 bg-[#52DE4B] rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">شكراً لك!</h2>
+          <p class="text-gray-600 mb-6"> سيتم توجيهك إلى أحد ممثلين خدمة العملاء لتأكيد الحجز خلال</p>
+          <div class="text-4xl font-bold text-[#52DE4B] mb-4">{{ countdown() }}</div>
+          <p class="text-sm text-gray-500">ثانية</p>
+        </div>
+      </div>
+    }
+
       <!-- Floating WhatsApp Button -->
   <a href="https://wa.me/966567372301?text=السلام%20عليكم،%20أريد%20الاستفسار"
      target="_blank"
@@ -361,13 +384,15 @@ import { FooterComponent } from './footer.component';
 })
 export class ReservationComponent {
   currentStep = signal(1);
+  showThankYouModal = signal(false);
+  countdown = signal(5);
   form: FormGroup;
 
   progressWidth = computed(() => {
     return `${((this.currentStep() - 1) / 3) * 100}%`;
   });
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private router: Router) {
     this.form = this.fb.group({
       serviceType: ['', Validators.required],
       destination: ['', Validators.required],
@@ -384,7 +409,7 @@ export class ReservationComponent {
       }),
       userInfo: this.fb.group({
         name: ['', Validators.required],
-        phone: ['', Validators.required]
+        phone: ['', [Validators.required, Validators.pattern(/^05\d{8}$/)]]
       })
     });
   }
@@ -456,30 +481,55 @@ export class ReservationComponent {
   submitToWhatsApp() {
     if (this.form.invalid) return;
 
-    const data = this.form.value;
-    let message = `*طلب حجز جديد من الموقع*%0a`;
-    message += `---------------------------%0a`;
-    message += `*الاسم:* ${data.userInfo.name}%0a`;
-    message += `*الجوال:* ${data.userInfo.phone}%0a`;
-    message += `---------------------------%0a`;
-    message += `*الخدمة المطلوبة:* ${this.getServiceLabel()}%0a`;
-    message += `*الوجهة:* ${this.getDestinationLabel()}%0a`;
+        
+        // Build WhatsApp message
+        const data = this.form.value;
+        let message = `*طلب حجز جديد من الموقع*%0a`;
+        message += `---------------------------%0a`;
+        message += `*الاسم:* ${data.userInfo.name}%0a`;
+        message += `*الجوال:* ${data.userInfo.phone}%0a`;
+        message += `---------------------------%0a`;
+        message += `*الخدمة المطلوبة:* ${this.getServiceLabel()}%0a`;
+        message += `*الوجهة:* ${this.getDestinationLabel()}%0a`;
 
-    if (this.showBusFields()) {
-      message += `*تفاصيل الباص:*%0a`;
-      message += `*- التاريخ:* ${data.busDetails.date}%0a`;
-      message += `*- المقاعد:* ${data.busDetails.seats}%0a`;
-      message += `*- النوع:* ${data.busDetails.type === 'vip' ? 'VIP' : 'عادي'}%0a`;
-    }
+        if (this.showBusFields()) {
+          message += `*تفاصيل الباص:*%0a`;
+          message += `*- التاريخ:* ${data.busDetails.date}%0a`;
+          message += `*- المقاعد:* ${data.busDetails.seats}%0a`;
+          message += `*- النوع:* ${data.busDetails.type === 'vip' ? 'VIP' : 'عادي'}%0a`;
+        }
 
-    if (this.showHotelFields()) {
-      message += `*تفاصيل الفندق:*%0a`;
-      message += `*- تاريخ الوصول:* ${data.hotelDetails.date}%0a`;
-      message += `*- عدد الايام:* ${data.hotelDetails.days}%0a`;
-      message += `*- الغرف:* ${data.hotelDetails.rooms}%0a`;
-      message += `*- النوع:* ${data.hotelDetails.type === 'private' ? 'خاص' : 'مشترك'}%0a`;
-    }
+        if (this.showHotelFields()) {
+          message += `*تفاصيل الفندق:*%0a`;
+          message += `*- تاريخ الوصول:* ${data.hotelDetails.date}%0a`;
+          message += `*- عدد الايام:* ${data.hotelDetails.days}%0a`;
+          message += `*- الغرف:* ${data.hotelDetails.rooms}%0a`;
+          message += `*- النوع:* ${data.hotelDetails.type === 'private' ? 'خاص' : 'مشترك'}%0a`;
+        }
 
-    window.open(`https://wa.me/966567372301?text=${message}`, '_blank');
+       
+        // Clear form and reset to first step
+        this.form.reset();
+        this.currentStep.set(1);
+        
+    // Show thank you modal
+    this.showThankYouModal.set(true);
+    this.countdown.set(5);
+
+    // Start countdown
+    const interval = setInterval(() => {
+      this.countdown.update(c => c - 1);
+      
+      if (this.countdown() <= 0) {
+        clearInterval(interval);
+        // Hide modal
+        this.showThankYouModal.set(false);
+         // Open WhatsApp
+        window.open(`https://wa.me/966567372301?text=${message}`, '_blank');
+        
+        // Redirect to home
+        this.router.navigate(['/']);
+      }
+    }, 1000);
   }
 }

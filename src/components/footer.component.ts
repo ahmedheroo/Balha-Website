@@ -52,8 +52,7 @@ import { Component, ChangeDetectionStrategy, signal, ElementRef, ViewChild, Afte
           <div class="text-center md:text-center text-sm text-gray-500">
             <span class="text-[#52DE4B]">سما الحرمين للعمرة والزيارة </span>
              &copy; {{ currentYear() }}.جميع الحقوق محفوظة.
-              <p> <span class="text-[#F1E100]"><a href="https://wa.me/201015855016"
-                                        target="_blank">تصميم م.أحمد حسن</a> </span></p>
+              
           </div>
         </div>
       </div>
