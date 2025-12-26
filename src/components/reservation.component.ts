@@ -522,13 +522,12 @@ export class ReservationComponent {
       
       if (this.countdown() <= 0) {
         clearInterval(interval);
-        // Hide modal
-        this.showThankYouModal.set(false);
          // Open WhatsApp
         window.open(`https://wa.me/966567372301?text=${message}`, '_blank');
-        
+        // Hide modal
+        this.showThankYouModal.set(false);
         // Redirect to home
-        this.router.navigate(['/']);
+        //this.router.navigate(['/']);
       }
     }, 1000);
   }
