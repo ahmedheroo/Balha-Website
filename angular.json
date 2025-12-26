@@ -15,7 +15,7 @@
             "outputPath": "dist/app",
             "baseHref": "./",
             "assets": [
-              "src/CNAME",
+              "CNAME",
               "assets"
             ],
             "browser": "index.tsx",
