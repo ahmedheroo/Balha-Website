@@ -15,7 +15,8 @@
             "outputPath": "dist/app",
             "baseHref": "./",
             "assets": [
-              "assets"
+              "assets",
+              "src/CNAME"
             ],
             "browser": "index.tsx",
             "tsConfig": "tsconfig.json"
